@@ -15,16 +15,14 @@ pub fn get_linux_battery() -> f64 {
         let paths = fs::read_dir("/proc/acpi/battery/").unwrap();
 
         for path in paths {
+                let battery_path_temp = path.unwrap().path();
+                let battery_path = battery_path_temp.as_path();
 
-            let battery_path_str = path.unwrap().path();
-
-            let battery_path = Path::new(battery_path_str);
-
-            if battery_path.exist() && battery_path.is_dir() {
-                let info_path = battery_path.join("info");
-                let status_path = battery_path.join("status");
-
-                println!("{} {}", info_path.path(), status_path.path());
+                if battery_path.exists() && battery_path.is_dir() {
+                    let info_path = battery_path.join("info");
+                    let status_path = battery_path.join("status");
+                    println!("{:?} {:?}", info_path, status_path)
+                }
             }
 //
 //            let file = File::open();
@@ -32,7 +30,7 @@ pub fn get_linux_battery() -> f64 {
 //            let mut contents = String::new();
 //            file.read_to_string(contents).unwrap();
 
-        }
+
     }
 
     return 0.0;
