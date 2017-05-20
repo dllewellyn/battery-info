@@ -21,14 +21,19 @@ pub fn get_linux_battery() -> f64 {
                 if battery_path.exists() && battery_path.is_dir() {
                     let info_path = battery_path.join("info");
                     let status_path = battery_path.join("status");
-                    println!("{:?} {:?}", info_path, status_path)
+
+
+                    let file = File::open(info_path.to_str().unwrap());
+
+                    if file.is_ok() {
+                        let mut contents = String::new();
+                        file.unwrap().read_to_string(&mut contents).unwrap();
+                        println!("{}", contents);
+                    }
+
+
                 }
             }
-//
-//            let file = File::open();
-//
-//            let mut contents = String::new();
-//            file.read_to_string(contents).unwrap();
 
 
     }
