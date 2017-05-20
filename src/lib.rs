@@ -18,12 +18,12 @@ pub fn get_linux_battery() -> f64 {
 
         let paths = fs::read_dir("/proc/acpi/battery/").unwrap();
 
-        if paths.size() > 0 {
-            panic!("Multiple batteries found. This is not supported!!");
+        for path in paths {
+            println!("{:?}", path.unwrap());
         }
-
-        println!("{}", paths);
     }
+
+    return 0.0;
 }
 
 pub fn get_battery() -> f64 {
@@ -31,13 +31,13 @@ pub fn get_battery() -> f64 {
     #[allow(unused_assignments)]
     let mut result : f64 = 0.0;
 
-    if cfg!(target_os == "macos") {
+    if cfg!(target_os = "macos") {
         unsafe {
-            result = batteryLevel();
+            result = batteryLevel()
         };
-    } else if cfg!(target_os == "linux") {
-        result = get_linux_battery();
-    }
+    } else if cfg!(target_os = "linux") {
+            result = get_linux_battery()
+    };
 
     return result;
 }
