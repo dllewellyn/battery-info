@@ -15,9 +15,14 @@ pub fn get_linux_battery() -> f64 {
         let paths = fs::read_dir("/proc/acpi/battery/").unwrap();
 
         for path in paths {
-            if path.unwrap().exist() && path.unwrap().is_dir() {
-                let info_path = path.unwrap().join("info");
-                let status_path = path.unwrap().join("status");
+
+            let battery_path_str = path.unwrap().path();
+
+            let battery_path = Path::new(battery_path_str);
+
+            if battery_path.exist() && battery_path.is_dir() {
+                let info_path = battery_path.join("info");
+                let status_path = battery_path.join("status");
 
                 println!("{} {}", info_path.path(), status_path.path());
             }
