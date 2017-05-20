@@ -6,12 +6,20 @@ use std::io::Read;
 use std::fs::File;
 use self::regex::Regex;
 
+#[cfg(all(target_os="macos"))]
 #[link(name = "battery_info_lib")]
 extern {
     fn batteryLevel() -> f64;
 }
 
-pub fn get_linux_battery() -> f64 {
+#[cfg(any(linux))]
+fn batteryLevel() -> f64 {
+  panic!("Should not be calling stub function");
+  return 0.0;
+}
+
+#[cfg(not(macos))]
+pub fn battery_level_linux() -> f64 {
     let path = Path::new("/proc/acpi/battery/");
     if path.exists() && path.is_dir() {
 
@@ -81,7 +89,7 @@ pub fn get_battery() -> f64 {
             result = batteryLevel()
         };
     } else if cfg!(target_os = "linux") {
-            result = get_linux_battery()
+            result = battery_level_linux()
     };
 
     return result;
@@ -114,8 +122,6 @@ mod tests {
             assert!(count > 0);
 
             for cap in re.captures_iter(data.as_str()) {
-                println!("{}", &cap[1]);
-
                 let result = cap[1].to_string().parse::<f64>().unwrap();
                 assert_eq!(result, battery_result);
             }
