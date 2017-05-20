@@ -54,7 +54,8 @@ pub fn get_linux_battery() -> f64 {
                         let status_results = re_status.captures(status.as_str());
 
                         if info_results.is_some() && status_results.is_some() {
-                            println!("{} {}", info_results.unwrap().get(1).unwrap().as_str(), status_results.unwrap().get(1).unwrap().as_str());
+                            println!("{} {}", info_results.unwrap().get(1).unwrap().as_str().parse::<f64>().unwrap(),
+                                     status_results.unwrap().get(1).unwrap().as_str().parse::<f64>().unwrap());
                         } else {
                             println!("Regex failed..");
                         }
