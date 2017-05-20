@@ -1,7 +1,29 @@
+use std::path::Path;
+use std::fs;
+use std::io::Read;
+use std::fs::File;
 
 #[link(name = "battery_info_lib")]
 extern {
     fn batteryLevel() -> f64;
+}
+
+pub fn get_linux_battery() -> f64 {
+    let path = Path::new("/proc/acpi/battery/");
+    if path.exists() && path.is_dir() {
+        let file = match File::open("") {
+            Err(why) => panic!("Failed to open file {}", why),
+            Ok(file) => Some(file)
+        };
+
+        let paths = fs::read_dir("/proc/acpi/battery/").unwrap();
+
+        if paths.size() > 0 {
+            panic!("Multiple batteries found. This is not supported!!");
+        }
+
+        println!("{}", paths);
+    }
 }
 
 pub fn get_battery() -> f64 {
@@ -9,9 +31,13 @@ pub fn get_battery() -> f64 {
     #[allow(unused_assignments)]
     let mut result : f64 = 0.0;
 
-    unsafe {
-        result = batteryLevel();
-    };
+    if cfg!(target_os == "macos") {
+        unsafe {
+            result = batteryLevel();
+        };
+    } else if cfg!(target_os == "linux") {
+        result = get_linux_battery();
+    }
 
     return result;
 }
