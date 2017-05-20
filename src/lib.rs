@@ -1,7 +1,10 @@
+extern crate regex;
+
 use std::path::Path;
 use std::fs;
 use std::io::Read;
 use std::fs::File;
+use self::regex::Regex;
 
 #[link(name = "battery_info_lib")]
 extern {
@@ -28,12 +31,33 @@ pub fn get_linux_battery() -> f64 {
 
 
                     if info_file.is_ok() && status_file.is_ok() {
+
+                        // Open up the info and status for this battery
+                        // Info will give us the max capacity, e.g.:
+                        //
+                        // Last full capacity:      5000 mAh
+                        //
+                        // Status will give us the remaining. E.g.:
+                        //
+                        // remaining capacity:      4850 mAh
                         let mut info = String::new();
                         let mut status = String::new();
 
                         info_file.unwrap().read_to_string(&mut info).unwrap();
                         status_file.unwrap().read_to_string(&mut status).unwrap();
-                        println!("{} {}", info, status);
+
+                        // Regex those two files to extract the data we need.
+                        let re_info= Regex::new(r"last full capacity:[ ]+([0-9]+) [A-Za-z]+").unwrap();
+                        let info_results = info.find(re_info);
+
+                        let re_status = Regex::new(r"remaining capacity:[ ]+([0-9]+) [A-Za-z]+").unwrap();
+                        let status_results = info.find(re_status);
+
+                        if info_results.is_some() && status_results.is_some() {
+                            println!("{} {}", info_results.unwrap(), status_results.unwrap());
+                        } else {
+                            println!("Regex failed..");
+                        }
 
                     }
 
