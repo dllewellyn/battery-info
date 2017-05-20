@@ -20,7 +20,7 @@ pub fn get_linux_battery() -> f64 {
 
                 if battery_path.exists() && battery_path.is_dir() {
                     let info_path = battery_path.join("info");
-                    let status_path = battery_path.join("status");
+                    let status_path = battery_path.join("state");
 
 
                     let info_file = File::open(info_path.to_str().unwrap());
