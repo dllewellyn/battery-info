@@ -48,13 +48,13 @@ pub fn get_linux_battery() -> f64 {
 
                         // Regex those two files to extract the data we need.
                         let re_info = Regex::new(r"last full capacity:[ ]+([0-9]+) [A-Za-z]+").unwrap();
-                        let info_results = re_info.find(info.as_str());
+                        let info_results = re_info.captures(info.as_str());
 
                         let re_status = Regex::new(r"remaining capacity:[ ]+([0-9]+) [A-Za-z]+").unwrap();
-                        let status_results = re_status.find(status.as_str());
+                        let status_results = re_status.captures(status.as_str());
 
                         if info_results.is_some() && status_results.is_some() {
-                            println!("{} {}", info_results.unwrap().as_str(), status_results.unwrap().as_str());
+                            println!("{} {}", info_results.unwrap().get(1).unwrap().as_str(), status_results.unwrap().get(1).unwrap().as_str());
                         } else {
                             println!("Regex failed..");
                         }
