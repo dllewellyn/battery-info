@@ -1,0 +1,9 @@
+[package]
+name = "battery_info"
+version = "0.1.0"
+authors = ["Daniel Llewellyn <danieln.llewellyn@gmail.com>"]
+description = "A library in order to retrieve battery information"
+build = "build.rs"
+
+[dev-dependencies]
+regex = "0.2"
