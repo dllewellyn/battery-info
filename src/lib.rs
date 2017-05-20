@@ -23,12 +23,18 @@ pub fn get_linux_battery() -> f64 {
                     let status_path = battery_path.join("status");
 
 
-                    let file = File::open(info_path.to_str().unwrap());
+                    let info_file = File::open(info_path.to_str().unwrap());
+                    let status_file = File::open(status_path.to_str().unwrap());
 
-                    if file.is_ok() {
-                        let mut contents = String::new();
-                        file.unwrap().read_to_string(&mut contents).unwrap();
-                        println!("{}", contents);
+
+                    if info_file.is_ok() && status_file.is_ok() {
+                        let mut info = String::new();
+                        let mut status = String::new();
+
+                        info_file.unwrap().read_to_string(&mut info).unwrap();
+                        status_file.unwrap().read_to_string(&mut status).unwrap();
+                        println!("{} {}", info, status);
+
                     }
 
 
