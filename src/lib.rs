@@ -53,12 +53,9 @@ pub fn get_linux_battery() -> f64 {
                         let re_status = Regex::new(r"remaining capacity:[ ]+([0-9]+) [A-Za-z]+").unwrap();
                         let status_results = re_status.captures(status.as_str());
 
-                        if info_results.is_some() && status_results.is_some() {
-                            println!("{} {}", info_results.unwrap().get(1).unwrap().as_str().parse::<f64>().unwrap(),
-                                     status_results.unwrap().get(1).unwrap().as_str().parse::<f64>().unwrap());
-                        } else {
-                            println!("Regex failed..");
-                        }
+                        // Battery percentage is: (max / 100) * current
+                        return (100.00 / info_results.unwrap().get(1).unwrap().as_str().parse::<f64>().unwrap())
+                        * status_results.unwrap().get(1).unwrap().as_str().parse::<f64>().unwrap()
 
                     }
 
@@ -122,6 +119,16 @@ mod tests {
                 let result = cap[1].to_string().parse::<f64>().unwrap();
                 assert_eq!(result, battery_result);
             }
+        } else if cfg!(target_os = "linux") {
+            let output = Command::new("upower")
+                .args(vec!["-d", "|", "grep", "\"percentage\""])
+                .output()
+                .expect("failed to execute process");
+            let re = Regex::new(r"([0-9]{1,3})%").unwrap();
+            let data = String::from_utf8(output.stdout).unwrap();
+            let captures = re.captures(data.as_str()).unwrap();
+            assert_eq!(battery_result, captures.get(1).unwrap().as_str().parse::<f64>().unwrap());
+
         } else {
             panic!("Unsupported platform");
         }
