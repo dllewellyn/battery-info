@@ -12,7 +12,7 @@ extern {
     fn batteryLevel() -> f64;
 }
 
-#[cfg(any(linux))]
+#[cfg(all(target_os="linux"))]
 fn batteryLevel() -> f64 {
   panic!("Should not be calling stub function");
   return 0.0;
