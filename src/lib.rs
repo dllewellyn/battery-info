@@ -11,20 +11,29 @@ extern {
 pub fn get_linux_battery() -> f64 {
     let path = Path::new("/proc/acpi/battery/");
     if path.exists() && path.is_dir() {
-        let file = match File::open("") {
-            Err(why) => panic!("Failed to open file {}", why),
-            Ok(file) => Some(file)
-        };
 
         let paths = fs::read_dir("/proc/acpi/battery/").unwrap();
 
         for path in paths {
-            println!("{:?}", path.unwrap());
+            if path.unwrap().exist() && path.unwrap().is_dir() {
+                let info_path = path.unwrap().join("info");
+                let status_path = path.unwrap().join("status");
+
+                println!("{} {}", info_path.path(), status_path.path());
+            }
+//
+//            let file = File::open();
+//
+//            let mut contents = String::new();
+//            file.read_to_string(contents).unwrap();
+
         }
     }
 
     return 0.0;
 }
+
+
 
 pub fn get_battery() -> f64 {
 
@@ -62,6 +71,7 @@ mod tests {
 
             let data = String::from_utf8(output.stdout).unwrap();
             println!("{}", data);
+
             let re = Regex::new(r"([0-9]{1,3})%").unwrap();
             let regex_results = re.captures_iter(data.as_str());
             let count = regex_results.count();
